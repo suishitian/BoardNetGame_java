@@ -6,30 +6,47 @@ import java.awt.event.ActionListener;
 public class welcomepage {
 	private JFrame frame;
 	private JTextField title;
-	//private JButton startgame;
-	//private JButton quit;
+	//private int[][] info;
+	
+	private int loginFlag;
+	private int registerFlag;
+	private int startFlag;
+	
+	private int width;
+	private int height;
+	
 	private JMenuBar menuBar;
 	private JPanel panel1;
 	private JPanel panel2;
 	private JPanel cardpanel;
+	private JPanel loginPage;
 	private JPanel registerPage;
+	private JPanel game;
 	
+	private DrawArea drawArea;
 	public welcomepage(int width ,int height,String name){
+		
+		loginFlag = 0;
+		registerFlag = 0;
+		this.width = width;
+		this.height = height;
 		frame = new JFrame(name);
 		frame.setSize(width,height);
 		menuBar = new JMenuBar();
 		title = new JTextField();
 		cardpanel = new JPanel();
 		
-		
 		JMenu menu = new JMenu("menu");
 		JMenuItem menuItem1 = new JMenuItem("register");
-	
+		JMenuItem menuItem2 = new JMenuItem("login in");
 		menu.add(menuItem1);
-
+		menu.add(menuItem2);
+		
 		setPanel1();
 		setPanel2();
 		setPanelRegister();
+		setPanelLogin();
+		setPanelGame();
 		Container content = frame.getContentPane();
 		content.setLayout(new GridLayout());
 		content.add(cardpanel);
@@ -37,6 +54,8 @@ public class welcomepage {
 		cardpanel.add(panel1, "one");
 		cardpanel.add(panel2, "two");
 		cardpanel.add(registerPage, "three");
+		cardpanel.add(loginPage, "loginPage");
+		cardpanel.add(drawArea,"gamePage");
 		((CardLayout)cardpanel.getLayout()).show(cardpanel,"one");
 		menuItem1.addActionListener(new ActionListener(){
 			@Override
@@ -45,23 +64,74 @@ public class welcomepage {
 				((CardLayout)cardpanel.getLayout()).show(cardpanel,"three");
 			}
 		});
+		menuItem2.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				((CardLayout)cardpanel.getLayout()).show(cardpanel,"loginPage");
+			}
+		});
 		menuBar.add(menu);
 		frame.setJMenuBar(menuBar);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
-	
+	public void runLogin(){
+		//todo
+	}
+	public void setPanelGame(){
+		drawArea = new DrawArea(width,height,1);
+		//game = new JPanel();
+		//game.setLayout(new BorderLayout());
+		//game.add(drawArea);
+		//Graphics g = game.getGraphics();
+		//g.drawLine(0, 0, game.WIDTH,game.HEIGHT);
+		//game.setVisible(true);
+		drawArea.setVisible(true);
+	}
+	public void setPanelLogin(){
+		loginPage = new JPanel();
+		loginPage.setLayout(new GridLayout(3,2));
+		
+		JLabel label1 = new JLabel("account");
+		JLabel label2 = new JLabel("passcode");
+		JTextField account = new JTextField();
+		JTextField passcode = new JTextField();
+		JButton confirm = new JButton("login in");
+		JButton goback = new JButton("go back");
+		
+		confirm.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				runLogin();
+			}
+		});
+		goback.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				((CardLayout)cardpanel.getLayout()).show(cardpanel,"one");
+			}
+		});
+		loginPage.add(label1);
+		loginPage.add(account);
+		loginPage.add(label2);
+		loginPage.add(passcode);
+		loginPage.add(confirm);
+		loginPage.add(goback);
+	}
 	public void setPanel1(){
 		panel1 = new JPanel();
 		panel1.setLayout(new GridLayout(3,1));
 		JButton startgame = new JButton("start"); 
+		//System.out.print(panel1.size()+" "+panel1.HEIGHT);
 		startgame.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				//transfer();
-				System.out.print("asd;);");
-				
+				//System.out.print("asd;);");
 				((CardLayout)cardpanel.getLayout()).show(cardpanel,"two");
 			}
 		});
@@ -97,6 +167,8 @@ public class welcomepage {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				
+				((CardLayout)cardpanel.getLayout()).show(cardpanel,"gamePage");
 				System.out.println("there should be a new window to play single game.");
 			}
 		});
@@ -105,6 +177,8 @@ public class welcomepage {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				System.out.println("there should be a new window to play multiple game");
+				if(loginFlag==0) ((CardLayout)cardpanel.getLayout()).show(cardpanel,"loginPage");
+				else ((CardLayout)cardpanel.getLayout()).show(cardpanel,"two");
 			}
 		});
 		goback.addActionListener(new ActionListener(){
