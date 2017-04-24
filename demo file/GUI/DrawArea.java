@@ -12,6 +12,8 @@ public class DrawArea extends JPanel{
 	private int l;
 	private int length;
 	private int position;
+	private int enposition;
+	private int step;
 	
 	private int[][] info;
 	private int MX;
@@ -26,7 +28,11 @@ public class DrawArea extends JPanel{
 		MX=0;
 		MY=0;
 		waitFlag = 0;
+		step = 0;
 		position = c;
+		if(position == 1) enposition = 2;
+		else if(position == 2) enposition = 1;
+		
 		if(c==1) {
 			myColor = Color.BLACK;
 			enColor = Color.WHITE;	
@@ -42,12 +48,7 @@ public class DrawArea extends JPanel{
 				info[i][j]=0;
 			}
 		}
-		/*for(int i=0;i<16;i++){
-			info[3][i]=1;
-		}
-		for(int i=0;i<16;i++){
-			info[i][5]=2;
-		}*/
+
 		super.setVisible(true);
 	}
 	
@@ -142,15 +143,16 @@ public class DrawArea extends JPanel{
 						info[xx][yy] = 1;
 						h.setColor(myColor);
 						h.fillOval(MX,MY,2*l,2*l);
+						step++;
 						if(winTest(position)){
-							System.out.println("youwin");
+							System.out.println(step+" youwin");
 						}
 						waitFlag=1;
-						int rx = round(Math.random()*16);
-						int ry = round(Math.random()*16);
+						int rx = round(Math.random()*15);
+						int ry = round(Math.random()*15);
 						while(info[rx][ry]!=0){
-							rx = round(Math.random()*16);
-							ry = round(Math.random()*16);
+							rx = round(Math.random()*15);
+							ry = round(Math.random()*15);
 						}
 						info[rx][ry] = 2;
 						h.setColor(enColor);
@@ -188,7 +190,7 @@ public class DrawArea extends JPanel{
 		
 	}
 	public boolean winTest(int side){
-		return rowTestBool(side,5);
+		return rowTestBool(side,5)||colTestBool(side,5)||LRTestBool(side,5)||RLTestBool(side,5);
 	}
 	public int[] rowTest(int side1 ,int num){
 		int flag = 0;
@@ -249,6 +251,140 @@ public class DrawArea extends JPanel{
 				}
 				else if(info[i][j]!=side){
 					flag=0;
+					count=0;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public boolean colTestBool(int side,int num){
+		int flag = 0;
+		int count = 0;
+		for(int j=0;j<16;j++){
+			for(int i=0;i<16;i++){
+				if(info[i][j]==side){
+					if(flag==0) {
+						flag=1;
+						count=1;
+						continue;
+					}
+					else if(flag==1){
+						count++;
+						if(count==num){
+							return true;
+						}
+					}
+				}
+				else if(info[i][j]!=side){
+					flag=0;
+					count=0;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public boolean LRTestBool(int side,int num){
+		int flag1 = 0;
+		int flag2 = 0;
+		int count1 = 0;
+		int count2 = 0;
+		int q = 0;
+		for(int i=0;i<=15-num;i++){
+			q=0;
+			for(int j=i;j<=15-i;j++,q++){
+				if(info[j][q]==side){
+					if(flag1==0){
+						flag1=1;
+						count1=1;
+						continue;
+					}
+					else if(flag1==1){
+						count1++;
+						if(count1==num){
+							return true;
+						}
+					}
+				}
+				
+				else if(info[j][q]!=side){
+					flag1=0;
+					count1=0;
+				}
+				
+				if(info[q][j]==side){
+					if(flag2==0){
+						flag2=1;
+						count2=1;
+						continue;
+					}
+					else if(flag2==1){
+						count2++;
+						if(count2==num){
+							return true;
+						}
+					}
+				}
+				
+				else if(info[q][j]!=side){
+					flag2=0;
+					count2=0;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public boolean RLTestBool(int side,int num){
+		int flag1 = 0;
+		int flag2 = 0;
+		int count1 = 0;
+		int count2 = 0;
+		int q = 0;
+		//int t = 0;
+		//int b = 15;
+		for(int i=0;i<=15-num;i++){
+			q=0;
+			//t=i;
+			//b=15;
+			for(int j=i;j<=15-i;j++,q++){
+				if(info[15-j][q]==side){
+					if(flag1==0){
+						flag1=1;
+						count1=1;
+						continue;
+					}
+					else if(flag1==1){
+						count1++;
+						if(count1==num){
+							return true;
+						}
+					}
+				}
+				
+				else if(info[15-j][q]!=side){
+					flag1=0;
+					count1=0;
+				}
+				
+				if(info[15-q][j]==side){
+					if(flag2==0){
+						flag2=1;
+						count2=1;
+						continue;
+					}
+					else if(flag2==1){
+						count2++;
+						if(count2==num){
+							return true;
+						}
+					}
+				}
+				
+				else if(info[15-q][j]!=side){
+					flag2=0;
+					count2=0;
 				}
 			}
 		}
