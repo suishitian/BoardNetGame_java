@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class welcomepage {
+	private socketJ client;
+	
 	private JFrame frame;
 	private JTextField title;
 	//private int[][] info;
@@ -80,7 +82,7 @@ public class welcomepage {
 		//todo
 	}
 	public void setPanelGame(){
-		drawArea = new DrawArea(width,height,1);
+		drawArea = new DrawArea(client);
 		//game = new JPanel();
 		//game.setLayout(new BorderLayout());
 		//game.add(drawArea);

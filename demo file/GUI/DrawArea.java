@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class DrawArea extends JPanel{
+	private socketJ client;
+	
 	private int width;
 	private int height;
 	private int BX1;
@@ -21,10 +23,13 @@ public class DrawArea extends JPanel{
 	private Color myColor;
 	private Color enColor;
 	private int waitFlag;
+	
+	private int winner=0;
 	//private Graphics g;
 	
-	public DrawArea(int a, int b,int c){
+	public DrawArea(socketJ client){
 		super(null);
+		this.client = client;
 		MX=0;
 		MY=0;
 		waitFlag = 0;
@@ -146,6 +151,7 @@ public class DrawArea extends JPanel{
 						step++;
 						if(winTest(position)){
 							System.out.println(step+" youwin");
+							winner = position;
 						}
 						waitFlag=1;
 						int rx = round(Math.random()*15);
@@ -158,6 +164,10 @@ public class DrawArea extends JPanel{
 						h.setColor(enColor);
 						h.fillOval(rx*2*l+BX1-l, ry*2*l+BY2-l, 2*l, 2*l);
 						waitFlag=0;
+						if(winTest(enposition)){
+							System.out.println(step+" enemy win");
+							winner = enposition;
+						}
 						repaint();
 					}
 				}
@@ -291,18 +301,23 @@ public class DrawArea extends JPanel{
 		int count1 = 0;
 		int count2 = 0;
 		int q = 0;
-		for(int i=0;i<=15-num;i++){
+		for(int i=0;i<=15-num+1;i++){
 			q=0;
-			for(int j=i;j<=15-i;j++,q++){
+			flag1=0;
+			flag2=0;
+			count1=0;
+			count2=0;
+			for(int j=i;j<=15;j++,q++){
 				if(info[j][q]==side){
 					if(flag1==0){
 						flag1=1;
 						count1=1;
-						continue;
 					}
 					else if(flag1==1){
 						count1++;
+						flag1=1;
 						if(count1==num){
+							System.out.println("LR: "+count1+" "+count2);
 							return true;
 						}
 					}
@@ -317,11 +332,12 @@ public class DrawArea extends JPanel{
 					if(flag2==0){
 						flag2=1;
 						count2=1;
-						continue;
 					}
 					else if(flag2==1){
 						count2++;
+						flag2=1;
 						if(count2==num){
+							System.out.println("LR: "+count1+" "+count2);
 							return true;
 						}
 					}
@@ -332,7 +348,9 @@ public class DrawArea extends JPanel{
 					count2=0;
 				}
 			}
+			System.out.println("LR: "+count1+" "+count2);
 		}
+		
 		return false;
 	}
 	
@@ -342,22 +360,23 @@ public class DrawArea extends JPanel{
 		int count1 = 0;
 		int count2 = 0;
 		int q = 0;
-		//int t = 0;
-		//int b = 15;
-		for(int i=0;i<=15-num;i++){
+		for(int i=0;i<=15-num+1;i++){
 			q=0;
-			//t=i;
-			//b=15;
-			for(int j=i;j<=15-i;j++,q++){
+			flag1=0;
+			flag2=0;
+			count1=0;
+			count2=0;
+			for(int j=i;j<=15;j++,q++){
 				if(info[15-j][q]==side){
 					if(flag1==0){
 						flag1=1;
 						count1=1;
-						continue;
 					}
 					else if(flag1==1){
 						count1++;
+						flag1=1;
 						if(count1==num){
+							System.out.println("RL: "+count1+" "+count2);
 							return true;
 						}
 					}
@@ -372,11 +391,12 @@ public class DrawArea extends JPanel{
 					if(flag2==0){
 						flag2=1;
 						count2=1;
-						continue;
 					}
 					else if(flag2==1){
 						count2++;
+						flag2=1;
 						if(count2==num){
+							System.out.println("RL: "+count1+" "+count2);
 							return true;
 						}
 					}
@@ -386,8 +406,10 @@ public class DrawArea extends JPanel{
 					flag2=0;
 					count2=0;
 				}
+				System.out.println("RL: "+count1+" "+count2);
 			}
 		}
+		
 		return false;
 	}
 }
