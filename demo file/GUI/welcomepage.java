@@ -2,9 +2,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-public class welcomepage {
+import java.net.*;
+;public class welcomepage {
 	private socketJ client;
+	private DatagramPacket serverP;
+	private PacketJ packet;
 	
 	private JFrame frame;
 	private JTextField title;
@@ -24,10 +26,20 @@ public class welcomepage {
 	private JPanel loginPage;
 	private JPanel registerPage;
 	private JPanel game;
+	private JPanel mutilgame;
 	
 	private DrawArea drawArea;
+	private mutliDrawArea multiDrawArea;
+	
 	public welcomepage(int width ,int height,String name){
-		
+		packet = new PacketJ();
+		client = new socketJ(5555);
+		client.sendJ("127.0.0.1", 5050, "connect:connect:connect");
+		client.receiveJS();
+		if(client.getString(client.getClr()).equals("connect:connect:confirm")){
+			System.out.println("connection successfully");
+			serverP = client.getClr();
+		}
 		loginFlag = 0;
 		registerFlag = 0;
 		this.width = width;
@@ -58,6 +70,7 @@ public class welcomepage {
 		cardpanel.add(registerPage, "three");
 		cardpanel.add(loginPage, "loginPage");
 		cardpanel.add(drawArea,"gamePage");
+		cardpanel.add(multiDrawArea,"multigamePage");
 		((CardLayout)cardpanel.getLayout()).show(cardpanel,"one");
 		menuItem1.addActionListener(new ActionListener(){
 			@Override
@@ -78,11 +91,19 @@ public class welcomepage {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
-	public void runLogin(){
-		//todo
+	public void runLogin(String account,String passcode){
+		client.sendBack(serverP, "login:"+account+":"+passcode);
+		client.receiveJS();
+		if(client.getString(client.getClr()).equals("login:confirm:confirm")){
+			loginFlag = 1;
+			System.out.println("login successfully");
+		}
+	}
+	public void runRegister(String account,String passcode){
+		client.sendBack(serverP, "register:"+account+":"+passcode);
 	}
 	public void setPanelGame(){
-		drawArea = new DrawArea(client);
+		drawArea = new DrawArea(client,1);
 		//game = new JPanel();
 		//game.setLayout(new BorderLayout());
 		//game.add(drawArea);
@@ -91,6 +112,7 @@ public class welcomepage {
 		//game.setVisible(true);
 		drawArea.setVisible(true);
 	}
+	
 	public void setPanelLogin(){
 		loginPage = new JPanel();
 		loginPage.setLayout(new GridLayout(3,2));
@@ -106,7 +128,7 @@ public class welcomepage {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				runLogin();
+				runLogin(account.getText(),passcode.getText());
 			}
 		});
 		goback.addActionListener(new ActionListener(){
@@ -180,7 +202,25 @@ public class welcomepage {
 				// TODO Auto-generated method stub
 				System.out.println("there should be a new window to play multiple game");
 				if(loginFlag==0) ((CardLayout)cardpanel.getLayout()).show(cardpanel,"loginPage");
-				else ((CardLayout)cardpanel.getLayout()).show(cardpanel,"two");
+				else {
+					client.sendBack(serverP, "request:5inrow:127.0.0.1");
+					client.receiveJS();
+					if(client.getString(client.getClr()).equals("request:5inrow:confirm")){
+						client.receiveJS();
+						if(packet.getFirst(client.getClr()).equals("request")){
+							if(packet.getEnd(client.getClr()).equals("B")){
+								//todo
+								multiDrawArea = new mutliDrawArea(client,1);
+								((CardLayout)cardpanel.getLayout()).show(cardpanel,"multigamePage");
+							}
+							else if(packet.getEnd(client.getClr()).equals("W")){
+								multiDrawArea = new mutliDrawArea(client,2);
+								((CardLayout)cardpanel.getLayout()).show(cardpanel,"multigamePage");
+							}
+						}
+					}
+				}
+				
 			}
 		});
 		goback.addActionListener(new ActionListener(){
@@ -209,6 +249,7 @@ public class welcomepage {
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				System.out.println("confirm");
+				runRegister(account.getText(),passcode.getText());
 			}
 		});
 		goback.addActionListener(new ActionListener(){

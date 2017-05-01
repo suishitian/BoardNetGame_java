@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class DrawArea extends JPanel{
+public class mutliDrawArea extends JPanel{
 	private socketJ client;
 	
 	private int width;
@@ -27,14 +27,15 @@ public class DrawArea extends JPanel{
 	private int winner=0;
 	//private Graphics g;
 	
-	public DrawArea(socketJ client,int c){
+	public mutliDrawArea(socketJ client,int c){
 		super(null);
 		this.client = client;
 		MX=0;
 		MY=0;
 		waitFlag = 0;
 		step = 0;
-		position = c;
+		//position = c;
+		
 		if(position == 1) enposition = 2;
 		else if(position == 2) enposition = 1;
 		
@@ -409,7 +410,6 @@ public class DrawArea extends JPanel{
 				System.out.println("RL: "+count1+" "+count2);
 			}
 		}
-		
 		return false;
 	}
 }
